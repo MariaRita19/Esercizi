@@ -1,0 +1,6 @@
+# Script Bash per copiare le misure scaricate in una directory nota 
+
+#!/bin/bash
+cd Downloads   # cambio cartella in Downloads dove si trova la cartella scaricata "perAbInf.tgz"
+tar xvzf perAbInf.tgz   # estraggo la cartella "data" che contiene i tre set di misure a partire da "perAbInf.tgz"
+cp -r data /home/Documents/Progetto   # copio i tre set di misure dalla cartella "data" a una nuova cartella "Progetto" specificandone il path
