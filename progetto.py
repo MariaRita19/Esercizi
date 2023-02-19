@@ -24,7 +24,6 @@ test = 1            # test = 1,2,3
 for i in np.arange(Nmeasures)+1:
     # scrivo il nome del file da leggere
     filename = f'C:/Users/pc/Documents/Maria Rita/ProgettoAB_INF/data/MockMeasures_2PCF_Test{test}/MockMeasures_2PCF_Correlation_MULTIPOLES_Test{test}_{i}.fits'
-    #print(f'Apro il file n° {i} chiamato {nomefile}')
     file = fits.open(filename)      # aprire file FITS (formato astronomico per salvare tabelle)
     table = file[1].data.copy()     # accesso alla tabella
     measures.append(table['XI0'])   # estrarre dalla tabella la colonna XI0
