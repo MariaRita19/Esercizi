@@ -15,13 +15,6 @@ measures = []       # lista vuota
 test = 1            # test = 1,2,3
 
 
-# SHELL
-# cd Documents
-# cd Maria Rita
-# cd ProgettoAB_INF
-# tar xvzf perAbInf.tgz  ->  "estrae" i dati dalla cartella   
-# pwd  ->  C:\Users\pc\Documents\Maria Rita\ProgettoAB_INF\data
-
 # 1. LEGGERE UN SINGOLO MULTIPOLO DA UN SET LIMITATO DI DATI
 
 # Si hanno infatti i primi cinque multipoli dell'espansione in serie di Legendre della funzione di correlazione a due punti (2PCF)
