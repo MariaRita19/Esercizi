@@ -15,15 +15,23 @@ measures = []       # lista vuota
 test = 1            # test = 1,2,3
 
 
+# SHELL
+# cd Documents
+# cd Maria Rita
+# cd ProgettoAB_INF
+# tar xvzf perAbInf.tgz  ->  "estrae" i dati dalla cartella   
+# pwd  ->  C:\Users\pc\Documents\Maria Rita\ProgettoAB_INF\data
+
 # 1. LEGGERE UN SINGOLO MULTIPOLO DA UN SET LIMITATO DI DATI
 
-# Si hanno infatti i primi cinque multipoli dell'espansione in serie di Legendre della funzione a due punti
+# Si hanno infatti i primi cinque multipoli dell'espansione in serie di Legendre della funzione di correlazione a due punti (2PCF)
 # I multipoli pari sono non nulli, gli altri sono nulli
 # In questa prima parte dell'esercizio si considera un singolo multipolo
  
 for i in np.arange(Nmeasures)+1:
     # scrivo il nome del file da leggere
     filename = f'C:/Users/pc/Documents/Maria Rita/ProgettoAB_INF/data/MockMeasures_2PCF_Test{test}/MockMeasures_2PCF_Correlation_MULTIPOLES_Test{test}_{i}.fits'
+    #print(f'Apro il file n° {i} chiamato {nomefile}')
     file = fits.open(filename)      # aprire file FITS (formato astronomico per salvare tabelle)
     table = file[1].data.copy()     # accesso alla tabella
     measures.append(table['XI0'])   # estrarre dalla tabella la colonna XI0
@@ -124,7 +132,7 @@ plt.show()
 # 5. CONFRONTARE COVARIANZA NUMERICA E TEORICA:
 #    CALCOLARE LA DIFFERENZA QUADRATICA MEDIA DEI RESIDUI NORMALIZZATI (deve essere ~1: validazione)  
   
-print('CONFRONTO COVARIANZA NUMERICA E TEORICA')
+print('CONFRONTO COVARIANZA NUMERICA E TEORICA - singolo multipolo')
 norm_residuals = np.zeros_like(cov_th)
 for i in range(Nbins):
     for j in range(Nbins):
@@ -134,7 +142,7 @@ for i in range(Nbins):
 rms_deviation = np.std(norm_residuals.reshape(Nbins**2))
 print(f"Differenza quadratica media dei residui normalizzati: {rms_deviation}")
 if rms_deviation<1.1:
-    print("La diff. quadratica media dei residui normalizzati è ~1 come dovrebbe essere; ok!")
+    print("La diff. quadratica media dei residui normalizzati è ~1; ok!")
 else:
     print("La diff. quadratica media dei residui normalizzati NON è ~1; non va bene")
 
@@ -142,7 +150,7 @@ else:
 # 6. ESTENDERE LA PROCEDURA A TRE MULTIPOLI PARI (0, 2 E 4) INCLUDENDO LE CROSS CORRELAZIONI
 # I multipoli pari sono non nulli
 
-Nbins_tot = 600
+Nbins_tot = 600     # in questo si costruirà una matrice 600×600 da popolare a blocchi
 measures_tot = []
 meas0 = []
 meas2 = []
@@ -232,8 +240,7 @@ for i in range(Nbins_tot):
     for j in range(Nbins_tot):
         covarianza[i,j] = (np.sum(measures_tot[i]*measures_tot[j]) - media[i]*media[j]*Nmeasures) / (Nmeasures-1)
 
-
-# Matrice di correlazione (è la covarianza normalizzata a 1 sulla diagonale)
+# Matrice di correlazione 
 correl_xi = np.zeros((Nbins_tot,Nbins_tot),dtype=float)
 for i in range(Nbins_tot):
     for j in range(Nbins_tot):
@@ -247,3 +254,17 @@ cbar = plt.colorbar(orientation="vertical", pad=0.02)
 cbar.set_label(r'$ C^{\xi}_{N}$')
 plt.show()
 
+
+print('VALIDAZIONE - tre multipoli pari')
+norm_residuals_tot = np.zeros_like(cov_th_tot)
+for i in range(Nbins_tot):
+    for j in range(Nbins_tot):
+        rho_2 = cov_th_tot[i,j]**2./(np.sqrt(cov_th_tot[i,i]*cov_th_tot[j,j])**2.)
+        norm_residuals_tot[i,j]=(cov_th_tot[i,j]-covar_xi[i,j])*np.sqrt((Nmeasures-1.)/((1.+rho_2)*cov_th_tot[i,i]*cov_th_tot[j,j]))
+
+rms_dev = np.std(norm_residuals_tot.reshape(Nbins_tot**2))
+print(f"Differenza quadratica media dei residui normalizzati: {rms_dev}")
+if rms_dev<1.1:
+    print("La diff. quadratica media dei residui normalizzati è ~1; ok!")
+else:
+    print("La diff. quadratica media dei residui normalizzati NON è ~1; non va bene")
