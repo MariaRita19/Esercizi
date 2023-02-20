@@ -168,6 +168,34 @@ meas4 = np.asarray(meas4).transpose()
 measures_tot = np.concatenate((meas0,meas2,meas4))  # concatenate: unire una sequenza di matrici lungo un asse 
 # print(misure.shape)
 
+# Calcolo media e covarianza con numpy
+media_xi = np.mean(measures_tot,axis=1)            
+covar_xi = np.cov(measures_tot)              
+
+media = np.zeros((Nbins_tot,),dtype=float)
+covarianza = np.zeros((Nbins_tot,Nbins_tot),dtype=float)
+
+for i in range(Nmeasures):
+    media += measures_tot[:,i]
+media /= Nmeasures
+    
+for i in range(Nbins_tot):
+    for j in range(Nbins_tot):
+        covarianza[i,j] = (np.sum(measures_tot[i]*measures_tot[j]) - media[i]*media[j]*Nmeasures) / (Nmeasures-1)
+
+# Matrice di correlazione 
+correl_xi = np.zeros((Nbins_tot,Nbins_tot),dtype=float)
+for i in range(Nbins_tot):
+    for j in range(Nbins_tot):
+        correl_xi[i,j]=covar_xi[i,j]/(covar_xi[i,i]*covar_xi[j,j])**0.5
+
+# Plot della matrice di covarianza misurata
+fig = plt.figure(figsize=(6,4))
+plt.title('Matrice di covarianza misurata')
+plt.imshow(covar_xi, vmin=cmin, vmax=cmax)
+cbar = plt.colorbar(orientation="vertical", pad=0.02)
+cbar.set_label(r'$ C^{\xi}_{N}$')
+plt.show()
 
 # Calcolo autocorrelazioni singolo multipolo
 cov0_th = np.zeros((Nbins,Nbins),dtype=float)
@@ -217,36 +245,6 @@ plt.show()
 
 
 # 7. VALIDARE IL CALCOLO DELLA COVARIANZA NUMERICA SUI TRE SET DI MISURE
-
-# Calcolo media e covarianza con numpy
-media_xi = np.mean(measures_tot,axis=1)            
-covar_xi = np.cov(measures_tot)              
-
-media = np.zeros((Nbins_tot,),dtype=float)
-covarianza = np.zeros((Nbins_tot,Nbins_tot),dtype=float)
-
-for i in range(Nmeasures):
-    media += measures_tot[:,i]
-media /= Nmeasures
-    
-for i in range(Nbins_tot):
-    for j in range(Nbins_tot):
-        covarianza[i,j] = (np.sum(measures_tot[i]*measures_tot[j]) - media[i]*media[j]*Nmeasures) / (Nmeasures-1)
-
-# Matrice di correlazione 
-correl_xi = np.zeros((Nbins_tot,Nbins_tot),dtype=float)
-for i in range(Nbins_tot):
-    for j in range(Nbins_tot):
-        correl_xi[i,j]=covar_xi[i,j]/(covar_xi[i,i]*covar_xi[j,j])**0.5
-
-# Plot della matrice di covarianza misurata
-fig = plt.figure(figsize=(6,4))
-plt.title('Matrice di covarianza misurata')
-plt.imshow(covar_xi, vmin=cmin, vmax=cmax)
-cbar = plt.colorbar(orientation="vertical", pad=0.02)
-cbar.set_label(r'$ C^{\xi}_{N}$')
-plt.show()
-
 
 print('VALIDAZIONE - tre multipoli pari')
 norm_residuals_tot = np.zeros_like(cov_th_tot)
